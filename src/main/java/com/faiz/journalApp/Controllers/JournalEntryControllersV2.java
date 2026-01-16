@@ -62,8 +62,8 @@ if (journalEntry.isPresent()){
     public ResponseEntity<?> updateJournalEntryById(@PathVariable ObjectId id , @RequestBody JournalEntry newEntry){
         JournalEntry old = journalEntryService.findById(id).orElse(null);
         if(old != null){
-            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("")? newEntry.getTitle() : old.getTitle());
-            old.setJournal(newEntry.getJournal() != null && !newEntry.getJournal().equals("")? newEntry.getJournal() : old.getJournal());
+            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().isEmpty() ? newEntry.getTitle() : old.getTitle());
+            old.setJournal(newEntry.getJournal() != null && !newEntry.getJournal().isEmpty() ? newEntry.getJournal() : old.getJournal());
         journalEntryService.saveEntry(old);
         return  new ResponseEntity<>(old, HttpStatus.OK);
         }
