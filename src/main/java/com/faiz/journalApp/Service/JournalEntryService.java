@@ -21,11 +21,17 @@ private UserService userService;
 
 @Transactional
 public void saveEntry(JournalEntry journalEntry, String username){
-    User user = userService.findByUsername(username);
-    journalEntry.setDate(LocalDateTime.now());
-    JournalEntry saved = journalEntryRepository.save(journalEntry);
-    user.getJournalEntries().add(saved);
-    userService.saveUser(user);
+    try {
+        User user = userService.findByUsername(username);
+        journalEntry.setDate(LocalDateTime.now());
+        JournalEntry saved = journalEntryRepository.save(journalEntry);
+        user.getJournalEntries().add(saved);
+        userService.saveUser(user);
+    }catch(Exception e){
+        System.out.println(e);
+     throw new RuntimeException("Fatt gaya code",e);
+    }
+
 }
 
     public void saveEntry(JournalEntry journalEntry){
