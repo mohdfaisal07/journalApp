@@ -46,11 +46,21 @@ public Optional<JournalEntry> findById(ObjectId id){
     return journalEntryRepository.findById(id);
 }
 
-public void deleteById(ObjectId id, String username){
-    User user = userService.findByUsername(username);
-    user.getJournalEntries().removeIf(x -> x.getId().equals(id));
-    userService.saveUser(user);
-    journalEntryRepository.deleteById(id);
-
+@Transactional
+public Boolean deleteById(ObjectId id, String username){
+    boolean removed=false;
+    try {
+        User user = userService.findByUsername(username);
+        removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+        if (removed){
+            userService.saveUser(user);
+            journalEntryRepository.deleteById(id);
+        }
+    } catch (Exception e) {
+        System.out.println(e);
+        throw new RuntimeException("some problem occurred while deleting by id",e);
+    }
+    return removed;
 }
+
 }
