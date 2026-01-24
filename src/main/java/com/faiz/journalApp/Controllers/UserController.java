@@ -3,6 +3,8 @@ package com.faiz.journalApp.Controllers;
 
 import com.faiz.journalApp.Entity.User;
 import com.faiz.journalApp.Service.UserService;
+import com.faiz.journalApp.Service.WeatherService;
+import com.faiz.journalApp.api.response.WeatherResponse;
 import com.faiz.journalApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private WeatherService weatherService;
 
     @PutMapping()
     public ResponseEntity<?> updateUser(@RequestBody User user) {
@@ -38,6 +43,18 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
   userRepository.deleteByUsername(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        @GetMapping
+    public ResponseEntity<?> Greeting() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+           WeatherResponse weatherResponse= weatherService.getWeather("Mumbai");
+           String greeting= "";
+           if(weatherResponse != null){
+               greeting="Weather feels like "+ weatherResponse.getCurrent()+weatherResponse.getLocation();
+           }
+        return new ResponseEntity<>("Hii " + authentication.getName() + greeting, HttpStatus.OK);
+
         }
     }
 
