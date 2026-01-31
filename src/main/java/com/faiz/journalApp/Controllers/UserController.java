@@ -1,6 +1,7 @@
 package com.faiz.journalApp.Controllers;
 
 
+import com.faiz.journalApp.Cache.AppCache;
 import com.faiz.journalApp.Entity.User;
 import com.faiz.journalApp.Service.UserService;
 import com.faiz.journalApp.Service.WeatherService;
@@ -16,8 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-   @Autowired
-   private UserService userService;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AppCache appCache;
 
     @Autowired
     private UserRepository userRepository;
@@ -30,31 +34,39 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User userInDb = userService.findByUsername(username);
-      if(userInDb != null){
-          userInDb.setUsername(user.getUsername());
-          userInDb.setPassword(user.getPassword());
-          userService.saveNewUser(userInDb);
-      }
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (userInDb != null) {
+            userInDb.setUsername(user.getUsername());
+            userInDb.setPassword(user.getPassword());
+            userService.saveNewUser(userInDb);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteUserByUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-  userRepository.deleteByUsername(authentication.getName());
+        userRepository.deleteByUsername(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    }
 
-        @GetMapping
+    @GetMapping
     public ResponseEntity<?> Greeting() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-           WeatherResponse weatherResponse= weatherService.getWeather("Mumbai");
-           String greeting= "";
-           if(weatherResponse != null){
-               greeting="Weather feels like "+ weatherResponse.getCurrent()+weatherResponse.getLocation();
-           }
-        return new ResponseEntity<>("Hii " + authentication.getName() + greeting, HttpStatus.OK);
+        try {
+            WeatherResponse weatherResponse = weatherService.getWeather("Chennai");
+            String greeting = "";
+            if (weatherResponse != null) {
+                greeting = greeting = " This is how weather feels like in " + weatherResponse.getLocation().getName()
+                        + ", " + weatherResponse.getLocation().getRegion()
+                        + ", " + weatherResponse.getLocation().getCountry()
+                        + " with temperature " + weatherResponse.getCurrent().getTempC() + "°C";
 
+            }
+                return new ResponseEntity<>("Hii " + authentication.getName() + greeting, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("fat gaya bhai", HttpStatus.BAD_REQUEST);
         }
+
     }
+}
 
