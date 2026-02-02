@@ -29,7 +29,13 @@ public class QuoteController {
         return new ResponseEntity<>(quote.getQ(), HttpStatus.OK);
       }
         return new ResponseEntity<>("Nahi mila", HttpStatus.BAD_REQUEST);
-
     }
 
-}
+    public String fetchQuote(){
+        Quote[] response = restTemplate.getForObject(url, Quote[].class);
+        if (response != null && response.length>0){
+            Quote quote= response[0];
+            return quote.getQ();
+    }return null;
+
+}}

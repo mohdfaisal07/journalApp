@@ -21,6 +21,9 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private QuoteController quoteController;
+
+    @Autowired
     private AppCache appCache;
 
     @Autowired
@@ -53,13 +56,13 @@ public class UserController {
     public ResponseEntity<?> Greeting() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         try {
-            WeatherResponse weatherResponse = weatherService.getWeather("Chennai");
+            WeatherResponse weatherResponse = weatherService.getWeather("Mumbai");
             String greeting = "";
             if (weatherResponse != null) {
                 greeting = greeting = " This is how weather feels like in " + weatherResponse.getLocation().getName()
                         + ", " + weatherResponse.getLocation().getRegion()
                         + ", " + weatherResponse.getLocation().getCountry()
-                        + " with temperature " + weatherResponse.getCurrent().getTempC() + "°C";
+                        + " with temperature " + weatherResponse.getCurrent().getTempC() + "°C" +"\n"+ " | Quote for the day is \""+ quoteController.fetchQuote()+ "\"";
 
             }
                 return new ResponseEntity<>("Hii " + authentication.getName() + greeting, HttpStatus.OK);

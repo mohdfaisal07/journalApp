@@ -3,6 +3,7 @@ package com.faiz.journalApp.Service;
 import com.faiz.journalApp.Cache.AppCache;
 import com.faiz.journalApp.api.response.WeatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class WeatherService {
-
+    @Value("${weather.api.key}")
+    private String apiKey;
 
 @Autowired
 private RestTemplate restTemplate;
@@ -20,15 +22,8 @@ private RestTemplate restTemplate;
 private AppCache appCache;
 
 public WeatherResponse getWeather(String city) {
-    String baseUrl = appCache.getValue("Weather_api");
-    String apiKey = appCache.getValue("API_key");
-
-    String finalAPI = baseUrl
-            .replace("CITY", city)
-            .replace("API_Key", apiKey);
-
-    ResponseEntity<WeatherResponse> response =
-            restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
-
-    return response.getBody();
+    String finalAPI = appCache.get(AppCache.keys.WEATHER_API.toString()).replace("<CITY>", city).replace("<API_KEY>", apiKey);
+    ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
+    WeatherResponse body = response.getBody();
+    return body;
 }}

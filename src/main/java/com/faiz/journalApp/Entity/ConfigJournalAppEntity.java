@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -14,10 +15,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ConfigJournalAppEntity {
     @Id
-    private ObjectId id;
+    private String id;   // MongoDB _id field
 
-    private String Key;
-    private String Value;
-    private String Key2;
-    private String Value2;
+    @Field ("key")
+    private String key;
+
+    @Field("value")
+    private String value;
+
 }
